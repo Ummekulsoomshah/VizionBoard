@@ -1,28 +1,32 @@
-const userCreate = require('../../../lib/userCreate')
+const userCreate = require('../../../lib/user/userCreate')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const cloudinary=require('cloudinary').v2
+const cloudinary = require('cloudinary').v2
 const fs = require('fs')
-require('dotenv').config() 
+require('dotenv').config()
+
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    cloud_name: 'dxhqouszq',
+    api_key: '864435449977183',
+    api_secret: 'nbi2qOEgb9j11Os_RdVHRfeDbhY'
 })
-const userSignup = async (req, res,next) => {
-    const { username, email, password,role } = req.body
-const avatar = req.files?.avatar
+const userSignup = async (req, res, next) => {
+    const { username, email, password, role } = req.body
+    console.log("body",req.body)
+    console.log("file",req.files)
+    const avatar = req.files?.image
     if (!username || !email || !password) {
         return res.status(400).json({ message: "Please fill all the fields" })
     }
     const resultavatar = await cloudinary.uploader.upload(avatar.tempFilePath)
-        fs.unlinkSync(avatar.tempFilePath) // Cleanup temp file
+    fs.unlinkSync(avatar.tempFilePath) // Cleanup temp file
     const hashedPassword = await bcrypt.hash(password, 10)
-    const user = {
-        username, email, hashedPassword,resultavatar,role
+    const userdata = {
+        username, email, hashedPassword, resultavatar, role
     }
+    console.log("user information",userdata)
     try {
-        const user = await userCreate(user)
+        const user = await userCreate(userdata)
         if (user) {
             jwt.sign({ id: user.id }, process.env.JWT_SECRET, (err, token) => {
                 if (err) {
@@ -39,7 +43,7 @@ const avatar = req.files?.avatar
             return res.status(400).json({ message: "User already exists" })
         }
     } catch (error) {
-  next(error)
+        next(error)
 
     }
 }

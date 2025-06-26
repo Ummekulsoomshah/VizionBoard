@@ -6,10 +6,11 @@ const UpdateUser=require('../api/v1/user/editUser')
 const UpdatePassword=require('../api/v1/user/updatePass')
 const DeleteUser=require('../api/v1/user/deleteUser')
 const GoogleLogin=require('../api/v1/user/googleLogin')
+const authMiddleware = require('../middlewares/authmiddleware');
 
 router.post('/login',LoginUser);
 router.post('/signup',SignupUser); 
-// router.get('/getUser',GetUser);
+router.get('/getUser',authMiddleware,GetUser);
 // router.put('/updateUser',UpdateUser);
 // router.put('/updatePassword',UpdatePassword);
 // router.delete('/deleteUser',DeleteUser);
